@@ -33,9 +33,13 @@ void sjf_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
     }
     if (*cpu_task == NULL) {            // If CPU is idle
         queue_elem_t *pointer_queue = rq->head;
+        pcb_t *menor_temp = pointer_queue->pcb;
         while (pointer_queue->next != NULL) {
-
+            if (pointer_queue->pcb->time_ms < menor_temp->time_ms) {
+                menor_temp = pointer_queue->pcb;
+            }
+            pointer_queue = pointer_queue->next;
         }
-        *cpu_task = dequeue_pcb(rq);   // Get next task from ready queue (dequeue from head)
+        *cpu_task = dequeue_pcb(menor_temp);   // Get next task from ready queue (dequeue from head)
     }
 }

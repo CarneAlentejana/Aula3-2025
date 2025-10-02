@@ -1,4 +1,4 @@
-#include "sjf.h"
+#include "mlfq.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,15 +6,7 @@
 #include "msg.h"
 #include <unistd.h>
 
-pcb_t * dequeue_shortest_job(queue_t * rq);
-
-/**
- * @param current_time_ms The current time in milliseconds.
- * @param rq Pointer to the ready queue containing tasks that are ready to run.
- * @param cpu_task Double pointer to the currently running task. This will be updated
- *                 to point to the next task to run.
- */
-void sjf_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
+void mlfq_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
     if (*cpu_task) {
         (*cpu_task)->ellapsed_time_ms += TICKS_MS;      // Add to the running time of the application/task
         if ((*cpu_task)->ellapsed_time_ms >= (*cpu_task)->time_ms) {
@@ -33,18 +25,7 @@ void sjf_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
             (*cpu_task) = NULL;
         }
     }
-    if (*cpu_task == NULL) {
-        *cpu_task = dequeue_shortest_job(rq);
-    }
     if (*cpu_task == NULL) {            // If CPU is idle
-        queue_elem_t *pointer_queue = rq->head;
-        pcb_t *menor_temp = pointer_queue->pcb;
-        while (pointer_queue->next != NULL) {
-            if (pointer_queue->pcb->time_ms < menor_temp->time_ms) {
-                menor_temp = pointer_queue->pcb;
-            }
-            pointer_queue = pointer_queue->next;
-        }
         *cpu_task = dequeue_pcb(rq);   // Get next task from ready queue (dequeue from head)
     }
 }

@@ -40,6 +40,6 @@ void sjf_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
             }
             pointer_queue = pointer_queue->next;
         }
-        *cpu_task = dequeue_pcb(menor_temp);   // Get next task from ready queue (dequeue from head)
+        *cpu_task = dequeue_pcb(rq);   // Get next task from ready queue (dequeue from head)
     }
 }

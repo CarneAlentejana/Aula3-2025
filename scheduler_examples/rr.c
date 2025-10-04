@@ -8,6 +8,7 @@
 
 void rr_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
     if (*cpu_task) {
+
         (*cpu_task)->ellapsed_time_ms += TICKS_MS;      // Add to the running time of the application/task
         if ((*cpu_task)->ellapsed_time_ms >= (*cpu_task)->time_ms) {
             // Task finished
@@ -23,6 +24,9 @@ void rr_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
             // Application finished and can be removed (this is FIFO after all)
             free((*cpu_task));
             (*cpu_task) = NULL;
+        } else if (current_time_ms - (*cpu_task)->slice_start_ms >= 500) {
+          enqueue_pcb(rq, *cpu_task);
+          *cpu_task = NULL;
         }
     }
     if (*cpu_task == NULL) {            // If CPU is idle

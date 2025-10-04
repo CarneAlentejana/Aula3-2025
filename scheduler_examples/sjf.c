@@ -6,8 +6,6 @@
 #include "msg.h"
 #include <unistd.h>
 
-pcb_t * dequeue_shortest_job(queue_t * rq);
-
 /**
  * @param current_time_ms The current time in milliseconds.
  * @param rq Pointer to the ready queue containing tasks that are ready to run.
@@ -34,17 +32,21 @@ void sjf_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
         }
     }
     if (*cpu_task == NULL) {
-        *cpu_task = dequeue_shortest_job(rq);
-    }
-    if (*cpu_task == NULL) {            // If CPU is idle
-        queue_elem_t *pointer_queue = rq->head;
-        pcb_t *menor_temp = pointer_queue->pcb;
-        while (pointer_queue->next != NULL) {
-            if (pointer_queue->pcb->time_ms < menor_temp->time_ms) {
-                menor_temp = pointer_queue->pcb;
+        queue_elem_t *elem_atual = rq->head;
+        queue_elem_t *menor_elem = NULL;
+        pcb_t *menor = NULL;
+        //se elem_atual for NULL, a fila está vazia
+        while (elem_atual != NULL) {
+            if (!menor || elem_atual->pcb->time_ms < menor->time_ms) {
+                menor = elem_atual->pcb;
+                menor_elem = elem_atual;
             }
-            pointer_queue = pointer_queue->next;
+            elem_atual = elem_atual->next;
         }
-        *cpu_task = dequeue_pcb(rq);   // Get next task from ready queue (dequeue from head)
+        if (menor_elem != NULL) {
+            queue_elem_t *removed = remove_queue_elem(rq, menor_elem);
+            *cpu_task = removed->pcb;
+            free(removed);
+        }
     }
 }

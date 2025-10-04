@@ -15,6 +15,7 @@
 #include "fifo.h"
 #include "sjf.h"
 #include "rr.h"
+#include "mlfq.h"
 
 #include "msg.h"
 #include "queue.h"
@@ -237,9 +238,8 @@ static const char *SCHEDULER_NAMES[] = {
     "FIFO",
     "SJF",
     "RR",
-/*
-
     "MLFQ",
+/*
 */
     NULL
 };
@@ -249,7 +249,7 @@ typedef enum  {
     SCHED_FIFO = 0,
     SCHED_SJF = 1,
     SCHED_RR = 2,
-    SCHED_MLFQ
+    SCHED_MLFQ = 3
 } scheduler_en;
 
 scheduler_en get_scheduler(const char *name) {
@@ -318,6 +318,9 @@ int main(int argc, char *argv[]) {
                 break;
             case SCHED_RR:
                 rr_scheduler(current_time_ms, &ready_queue, &CPU);
+                break;
+            case SCHED_MLFQ:
+                mlfq_scheduler(current_time_ms, &ready_queue, &CPU);
                 break;
             default:
                 printf("Unknown scheduler type\n");

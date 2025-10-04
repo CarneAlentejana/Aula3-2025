@@ -25,8 +25,8 @@ void rr_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
             free((*cpu_task));
             (*cpu_task) = NULL;
         } else if (current_time_ms - (*cpu_task)->slice_start_ms >= 500) {
-          enqueue_pcb(rq, *cpu_task);
-          *cpu_task = NULL;
+            enqueue_pcb(rq, *cpu_task);
+            *cpu_task = NULL;
         }
     }
     if (*cpu_task == NULL) {            // If CPU is idle

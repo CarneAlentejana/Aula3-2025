@@ -1,4 +1,0 @@
-/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles" -S /home/aluno/tmp/tmp.JMAAoA8Nih/Aula3-2025v2/scheduler_examples -B /home/aluno/tmp/tmp.JMAAoA8Nih/Aula3-2025v2/scheduler_examples/cmake-build-debug
--- Configuring done
--- Generating done
--- Build files have been written to: /home/aluno/tmp/tmp.JMAAoA8Nih/Aula3-2025v2/scheduler_examples/cmake-build-debug

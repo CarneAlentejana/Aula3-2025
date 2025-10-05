@@ -19,7 +19,16 @@
  * @param cpu_task Double pointer to the currently running task. This will be updated
  *                 to point to the next task to run.
  */
+
+static queue_t fila0 = {0};
+static queue_t fila1 = {0};
+static queue_t fila2 = {0};
+
+static queue_t *queue_priorities[3] = { &fila0, &fila1, &fila2 };
+
 void mlfq_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
+    queue_priorities[0] = rq;
+
     if (*cpu_task) {
         (*cpu_task)->ellapsed_time_ms += TICKS_MS;      // Add to the running time of the application/task
         if ((*cpu_task)->ellapsed_time_ms >= (*cpu_task)->time_ms) {
@@ -37,10 +46,20 @@ void mlfq_scheduler(uint32_t current_time_ms, queue_t *rq, pcb_t **cpu_task) {
             free((*cpu_task));
             (*cpu_task) = NULL;
         } else if (current_time_ms - (*cpu_task)->slice_start_ms >= 500) {
-
+            if ((*cpu_task)->prioridade < 2) {
+                (*cpu_task)->prioridade++; // rebaixar para próxima fila
+            }
+            enqueue_pcb(queue_priorities[(*cpu_task)->prioridade], *cpu_task);
+            *cpu_task = NULL;
         }
     }
     if (*cpu_task == NULL) {            // If CPU is idle
-        *cpu_task = dequeue_pcb(rq);   // Get next task from ready queue (dequeue from head)
+        for (int i = 0; i < 3; i++) {
+            *cpu_task = dequeue_pcb(queue_priorities[i]);
+            if (*cpu_task) {
+                (*cpu_task)->slice_start_ms = current_time_ms;
+                break;
+            }
+        }
     }
 }
